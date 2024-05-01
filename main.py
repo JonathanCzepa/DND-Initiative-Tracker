@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import random
 
 """
-help
+help, WHAT THE FUCK IS HAPPENING
 """
 
 #Abstract class for NPCs and PCs.
@@ -79,33 +79,40 @@ class creature(ABC):
 
 
     
-    def setHPcurrent(self, damage, healing) -> int:    
+    def setHPcurrent(self, damage) -> int:    
 
-        if self.__HPtemp > 0:
-            damage - self.__HPtemp
-
-            if self.__HPtemp < 0:
-                self.__HPtemp = 0
-                damage - self.__HPtemp
-
-            else:
-                self.__HPtemp =- damage
-
-
-        #damage_temp =- self.__HPtemp
-        #self.__HPtemp =- damage
-        
-        self.__HPcurrent = self.__HPcurrent - damage + healing
-
-        if self.__HPcurrent > self.__HPmax:
-            self.__HPcurrent = self.__HPmax
+        #Deal damage to temp HP first
+        if (damage > 0):
+            if (self.__HPtemp > 0):
+                #Set follow through damage
+                throughDamage = damage - self.__HPtemp
             
-        if self.__HPcurrent < self.HP_MIN:
-            self.__HPcurrent = self.HP_MIN
+             #Deal damage to tempHP
+                self.__HPtemp -= damage
+            
+                #Check if tempHP is less than 0
+                if (self.__HPtemp < 0):
+                    self.__HPtemp = 0
+            
+                #Deal follow through damage
+                if(throughDamage > 0):
+                    self.__HPcurrent -= throughDamage
+        
+            #Deal damage with no temp HP
+            if (self.__HPtemp == 0):
+                self.__HPcurrent -= damage
+      
+        #Healing
+        if (damage < 0):
+            self.__HPcurrent -= damage
 
-        #check if dead
-        if self.__HPtemp < 0: 
-            self.__HPtemp = 0
+            if (self.__HPcurrent > self.__HPmax):
+                self.__HPcurrent = self.__HPmax
+          
+        #What is this doing?  
+        #if self.__HPcurrent < self.HP_MIN:
+            #self.__HPcurrent = self.HP_MIN
+
 
     def getHPcurrent(self):
         return self.__HPcurrent
@@ -154,19 +161,22 @@ class NPC(creature):
         self.__hasSaves = not self.__hasSaves
 
 
-
+#Test Cases for now
 
 Katla = playerCharacter()
 
+#Deal damage
 Katla.setMaxHP(30)
-Katla.setHPcurrent(0, 0)
-print(f"Katla's HP is: {Katla.getHPcurrent()}")
+Katla.setHPcurrent(5)
+print(f"Katla's HP is: {Katla.getHPcurrent()}\n")
 
-
+#Set TempHP
 Katla.setHPTemp(10)
-print(f"Katla's THP is: {Katla.getHPtemp()}")
+print(f"Katla's THP is: {Katla.getHPtemp()}\n")
 
-Katla.setHPcurrent(9, 0)
+#Heal
+Katla.setHPcurrent(9)
+Katla.setHPcurrent(-1)
 
 print(f"Katla's THP is: {Katla.getHPtemp()}")
 print(f"Katla's HP is: {Katla.getHPcurrent()}")
