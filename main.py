@@ -13,15 +13,15 @@ class creature(ABC):
     HP_MIN = 0
     MIN_HP_TEMP = 0
 
-    def __init__(self):
+    def __init__(self, Name, AC, HP, initMod):
 
-        self.__name = "-"
-        self.__AC = 0
-        self.__HPmax = 0
-        self.__HPcurrent = 0
+        self.__name = Name
+        self.__AC = AC
+        self.__HPmax = HP
+        self.__HPcurrent = HP
         self.__HPtemp = 0
         self.__turn = 0
-        self.__initMod = 0
+        self.__initMod = initMod
         self.init = 0
 
         self.__dead = False
@@ -80,7 +80,7 @@ class creature(ABC):
         self.__HPtemp = x
 
 
-    
+    """ Setter to deal with damage and healer scenarios  """   
     def setHPcurrent(self, damage) -> int:    
 
         #Deal damage to temp HP first
@@ -110,10 +110,6 @@ class creature(ABC):
 
             if (self.__HPcurrent > self.__HPmax):
                 self.__HPcurrent = self.__HPmax
-          
-        #What is this doing?  
-        #if self.__HPcurrent < self.HP_MIN:
-            #self.__HPcurrent = self.HP_MIN
 
 
     def getHPcurrent(self):
@@ -125,8 +121,8 @@ class creature(ABC):
     def getAC(self) -> int:
         return self.__AC
     
-    def getInitMod(self) -> int:
-        return self.__initMod
+    def getInit(self) -> int:
+        return (self.__initMod + self.init) 
     
     def getHPmax(self) -> int:
         return self.__HPmax
@@ -139,6 +135,10 @@ class creature(ABC):
     
     def getAlly(self) -> None:
         return self._isAlly
+    
+    def getName(self) -> str:
+        return self.__name
+        
     
     
 
@@ -167,10 +167,16 @@ def sortInit(creatures, init, reverse=False):
 
 #Test Cases for now
 
-Katla = playerCharacter()
+Katla = playerCharacter("Katla", 16, 30, 2)
+
+#Check Initialization 
+print(f"Katla's AC: {Katla.getAC}")
+print(f"Katla's HP is: {Katla.getHPcurrent()}\n")
+print(f"Katla's THP is {Katla.getHPtemp()}")
+print(f"Katla's will to live: {Katla.getIsDead}")
+
 
 #Deal damage
-Katla.setMaxHP(30)
 Katla.setHPcurrent(5)
 print(f"Katla's HP is: {Katla.getHPcurrent()}\n")
 
@@ -186,19 +192,19 @@ print(f"Katla's THP is: {Katla.getHPtemp()}")
 print(f"Katla's HP is: {Katla.getHPcurrent()}")
 
 #initiative
-Katla.setInitMod(2)
+print(f"Katla's initiative is {Katla.getInit()} ")
 Katla.rollInit()
-print(f"Katla's initiative is {Katla.init} ")
+print(f"Katla's initiative is {Katla.getInit()} ")
 
-Smoking_Joe = playerCharacter()
-Smoking_Joe.setInitMod(3)
+Smoking_Joe = playerCharacter("Smoking Joe", 15, 25, 3)
+print(f"Smoking jonk's initiative is {Smoking_Joe.getInit()} ")
 Smoking_Joe.rollInit()
-print(f"Smoking jonk's initiative is {Smoking_Joe.init} ")
+print(f"Smoking jonk's initiative is {Smoking_Joe.getInit()} ")
 
-Troglodyte = NPC()
-Troglodyte.setInitMod(2)
+Troglodyte = NPC("Trog1", 14, 42, 4)
+print(f"Troglodytes's initiative is {Troglodyte.getInit()} ")
 Troglodyte.rollInit()
-print(f"Troglodytes's initiative is {Troglodyte.init} ")
+print(f"Troglodytes's initiative is {Troglodyte.getInit()} ")
 
 
 init_list = [Katla, Smoking_Joe, Troglodyte]
@@ -210,6 +216,5 @@ sorted_init = sortInit(init_list, "init")
 print(Smoking_Joe)
 print(Katla)
 print(Troglodyte)
-
 print(sorted_init)
 
