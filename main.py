@@ -3,6 +3,8 @@ import random
 
 """
 help, WHAT THE FUCK IS HAPPENING
+
+Bruh
 """
 
 #Abstract class for NPCs and PCs.
@@ -20,7 +22,7 @@ class creature(ABC):
         self.__HPtemp = 0
         self.__turn = 0
         self.__initMod = 0
-        self.__init = 0
+        self.init = 0
 
         self.__dead = False
         self.__hasSaves = False
@@ -43,7 +45,7 @@ class creature(ABC):
         self.__isAlly = not self.__isAlly
 
     def rollInit(self):
-        self.__init = random.randrange(1,20) + self.__initMod
+        self.init = random.randrange(1,20) + self.__initMod
     
     def isManual(self):
         self.__manual = not self.__manual
@@ -132,14 +134,13 @@ class creature(ABC):
     def getTurn(self) -> int:
         return self.__turn
     
-    def getInit(self) -> int:
-        return self.__init
-    
     def getIsDead(self) -> None:
         return self.__dead
     
     def getAlly(self) -> None:
         return self._isAlly
+    
+    
 
         
 class playerCharacter(creature):
@@ -159,6 +160,9 @@ class NPC(creature):
     """
     def deathSaves(self):
         self.__hasSaves = not self.__hasSaves
+
+def sortInit(creatures, init, reverse=False):
+    return sorted(creatures, key=lambda x: getattr(x, init), reverse=reverse)
 
 
 #Test Cases for now
@@ -180,3 +184,32 @@ Katla.setHPcurrent(-1)
 
 print(f"Katla's THP is: {Katla.getHPtemp()}")
 print(f"Katla's HP is: {Katla.getHPcurrent()}")
+
+#initiative
+Katla.setInitMod(2)
+Katla.rollInit()
+print(f"Katla's initiative is {Katla.init} ")
+
+Smoking_Joe = playerCharacter()
+Smoking_Joe.setInitMod(3)
+Smoking_Joe.rollInit()
+print(f"Smoking jonk's initiative is {Smoking_Joe.init} ")
+
+Troglodyte = NPC()
+Troglodyte.setInitMod(2)
+Troglodyte.rollInit()
+print(f"Troglodytes's initiative is {Troglodyte.init} ")
+
+
+init_list = [Katla, Smoking_Joe, Troglodyte]
+
+sorted_init = sortInit(init_list, "init")
+
+
+
+print(Smoking_Joe)
+print(Katla)
+print(Troglodyte)
+
+print(sorted_init)
+
