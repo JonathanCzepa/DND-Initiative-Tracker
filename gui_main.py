@@ -91,6 +91,16 @@ class Gui_Main:
         elif status == "PC":
             self.death_saves.grid_remove()
 
+    """
+    callback to ensure certain entries are integers only.
+    not in use right now 
+    """
+    def callback(input):
+        if str.isdigit(input) or input =="":
+            return True
+        else:
+            return False
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = Gui_Main(root)
