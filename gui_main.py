@@ -15,6 +15,46 @@ TO-DO:
 import tkinter as tk
 from tkinter import ttk
 
+
+
+
+
+class TreeEdit(ttk.Treeview):
+    def __init__(self, master, **kw):
+        super().__init__(master, **kw)
+        self.bind("<Double-1>", self.double_click)
+
+        
+
+    def double_click(self, event):
+        
+        try:
+            region = self.identify_region(event.x, event.y)
+            
+            if region not in ("tree", "cell"):
+                return
+
+            column = self.identify_column(event.x)
+            column_index = int(column[1:]) - 1
+
+            value = self.item(self.focus())
+            id = self.focus()
+            if column == '#0':
+                selected_values = value.get("text") 
+            else:
+                selected_values = value.get("values")[column_index]
+            
+            cell = self.bbox(id,column)
+            print(cell)
+            entry = ttk.Entry(root, width=cell[2])
+            
+
+            
+
+        except IndexError:
+            return 0
+
+        print(selected_values)
 class Gui_Main:
     def __init__(self, root):
         self.root = root
@@ -27,6 +67,10 @@ class Gui_Main:
         # Initialize entry frame
         self.entry_frame = ttk.LabelFrame(self.frame, text="Enter Creature")
         self.entry_frame.grid(row=0, column=0, padx=20, pady=10)
+
+        # Initialize table frame
+        self.table_frame = ttk.Frame(self.frame)
+        self.table_frame.grid(row=0, column=1, padx=20, pady=10)
 
         self.setup_widgets()
 
@@ -65,6 +109,33 @@ class Gui_Main:
         self.roll_button = ttk.Button(self.entry_frame, text="ROLL")
         self.roll_button.grid(row=10, columnspan=2, column=0, sticky="ew")
 
+        #Tree Table
+        table_scroll = ttk.Scrollbar(self.table_frame)
+        table_scroll.pack(side="right", fill="y")
+        cols = ("turn", "name", "initiative", "ac", "hp", "damage", "healing", "death_saves")
+        table_view = TreeEdit(self.table_frame, show="headings", yscrollcommand=table_scroll.set, columns=cols, height=13)
+        table_view.column("turn", width=50)
+        table_view.column("name", width=250)
+        table_view.column("initiative", width=100)
+        table_view.column("ac", width=100)
+        table_view.column("hp", width=100)
+        table_view.column("damage", width=100)
+        table_view.column("healing", width=100)
+        table_view.column("death_saves", width=250) 
+        
+        table_view.insert(
+            "",
+            tk.END,
+            text="",
+            values=("8", "18:30")
+        )
+
+ 
+        
+        table_view.pack()
+        table_scroll.config(command=table_view.yview)
+
+
     def create_entry(self, frame, label_text, initial_text, row):
         label = ttk.Label(frame, text=label_text)
         label.grid(row=row, column=0, sticky="ew")
@@ -73,6 +144,10 @@ class Gui_Main:
         entry.bind("<FocusIn>", lambda e, entry=entry: entry.delete(0, 'end'))
         entry.grid(row=row, column=1, sticky="ew")
         return entry
+    """
+    def create_entry_row(self, frame, entry_data, row):
+        entry = ttk.Entry(frame)
+    """
 
     def add_thp_entry(self):
         if self.has_thp.get():
@@ -100,6 +175,9 @@ class Gui_Main:
             return True
         else:
             return False
+        
+    def get_table_frame(self):
+        return self.table_frame
 
 if __name__ == "__main__":
     root = tk.Tk()
