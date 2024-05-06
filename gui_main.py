@@ -11,10 +11,10 @@ TO-DO:
 7) AAAAAHHHH FUCK
 """
 
+
 import tkinter as tk
 from tkinter import ttk
 
-"""Class that allows for editing treeview stuff, need to fix it from bugging out in fullscreen or just remove fullscreen entirely"""
 class TreeEdit(ttk.Treeview):
 
     HORIZONAL_OFFSET = 305
@@ -27,34 +27,44 @@ class TreeEdit(ttk.Treeview):
 
     def selected_row(self, event):
         self.bind("<Delete>", self.delete_row)
-        self.bind("<Up>", self.up_select)
-        self.bind("<Down>", self.down_select)
+        self.bind("<Shift-Down>", self.shift_down)
+        self.bind("<Shift-Up>", self.shift_up)      
         self.bind("<Escape>", self.deselect)
 
     def delete_row(self, event):
         row = self.selection()[0]
         self.delete(row)
 
-    def up_select(self, event):
+    def shift_up(self, event):
         rows = self.selection()
-        for row in rows:
-            self.move(row, self.parent(row), self.index(row))
+        self.ahh = self.focus()
+        for i in rows:
+            self.move(i, self.parent(i), self.index(i)-1)
 
-    def down_select(self, event):
+        return "break"
+        
+    def shift_down(self, event):
+        self.shift_id = self.focus()
         rows = self.selection()
-        for row in rows:
-            self.move(row, self.parent(row), self.index(row))
+        for i in reversed(rows):
+            self.move(i, self.parent(i), self.index(i)+1)
 
+        return "break"
+        
     def deselect(self, event):
         if len(self.selection()) > 0:
             self.selection_remove(self.selection()[0])
 
-
+    def escape(self, event):
+        text = event.widget.get()
+        values_current = self.item(self.id).get("values")[self.column_index]=text
+        event.widget.destroy()
 
     def double_click(self, event):
         try:
-            region = self.identify_region(event.x, event.y)
-            
+            self.x_region = event.x
+            self.y_region = event.y
+            region = self.identify_region(self.x_region, self.y_region)
             if region not in ("tree", "cell"):
                 return
 
@@ -63,6 +73,7 @@ class TreeEdit(ttk.Treeview):
 
             value = self.item(self.focus())
             self.id = self.focus()
+            print(self.id)
             if column == '#0':
                 selected_values = value.get("text") 
             else:
@@ -78,17 +89,17 @@ class TreeEdit(ttk.Treeview):
             self.entry.bind("<FocusOut>", self.focus_out)
             self.entry.bind("<Return>", self.enter)
             self.entry.bind("<Escape>", self.escape)
-            
+
             self.entry.place(
                 x=cell[0]+ self.HORIZONAL_OFFSET,
                 y=cell[1]+ self.VERTICAL_OFFSET,
                 w=cell[2],
                 h=cell[3]
             )
-        
+            print(event.x)
         except IndexError:
             return 0
-
+        
     def focus_out(self, event):
         event.widget.destroy()
 
@@ -98,14 +109,8 @@ class TreeEdit(ttk.Treeview):
         values_current[self.column_index] = text
         self.item(self.id, values=values_current)
         event.widget.destroy()
-    
-    def escape(self, event):
-        text = event.widget.get()
-        values_current = self.item(self.id).get("values")[self.column_index]=text
-        event.widget.destroy()
 
-
-class Gui_Main:
+class Gui_Main(TreeEdit):
     def __init__(self, root):
         self.root = root
         self.root.title("")
@@ -157,16 +162,26 @@ class Gui_Main:
         self.insert_button = ttk.Button(self.entry_frame, text="Insert", command=self.insert_button)
         self.insert_button.grid(row=9, columnspan=2, column=0, sticky="ew")
 
-        # Roll Button
-        self.roll_button = ttk.Button(self.entry_frame, text="ROLL")
-        self.roll_button.grid(row=10, columnspan=2, column=0, sticky="ew")
-
         #Tree Table
         table_scroll = ttk.Scrollbar(self.table_frame)
         table_scroll.pack(side="right", fill="y")
 
         cols = ("turn", "name", "initiative", "ac", "hp", "thp", "damage", "healing", "death_saves")
         self.table_view = TreeEdit(self.table_frame, show="headings", yscrollcommand=table_scroll.set, columns=cols, height=13)
+
+        # Roll Button
+        self.roll_button = ttk.Button(self.entry_frame, text="ROLL")
+        self.roll_button.grid(row=10, columnspan=2, column=0, sticky="ew")
+
+        self.table_view.heading("turn", text=" ")
+        self.table_view.heading("name", text="Name")
+        self.table_view.heading("initiative", text="Initiative")
+        self.table_view.heading("ac", text="AC")
+        self.table_view.heading("hp", text="HP")
+        self.table_view.heading("thp", text="THP")
+        self.table_view.heading("damage", text="Damage")
+        self.table_view.heading("healing", text="Healing")
+        self.table_view.heading("death_saves", text="Death Saves") 
 
 
         self.table_view.column("turn", width=50)
@@ -212,7 +227,7 @@ class Gui_Main:
     def insert_button(self):
         
         if self.has_saves.get():
-            death_saves = "3/3"
+            death_saves = "0:0"
         else:
             death_saves = "N/A"
 
@@ -239,7 +254,9 @@ class Gui_Main:
             values = creature_values
         )
 
-
+    def clear(self):
+        for i in self.table_view.get_children():
+            self.table_view.delete(i)
 
     """
     callback to ensure certain entries are integers only.
