@@ -3,12 +3,10 @@
 """
 TO-DO: 
 1) Get styles working
-2) Get NPC and PC widgets working
-3) Add padding
-4) Add some input limitations
-5) Add seperators  
-6) CSV support
-7) AAAAAHHHH FUCK
+2) Add some input limitations
+3) CSV support
+4) Fix horizontal offset again
+5) AAAAAHHHH FUCK
 """
 
 
@@ -17,7 +15,7 @@ from tkinter import ttk
 
 class TreeEdit(ttk.Treeview):
 
-    HORIZONAL_OFFSET = 305
+    HORIZONAL_OFFSET = 310
     VERTICAL_OFFSET = 10
 
     def __init__(self, master, **kw):
@@ -110,6 +108,7 @@ class TreeEdit(ttk.Treeview):
         self.item(self.id, values=values_current)
         event.widget.destroy()
 
+
 class Gui_Main(TreeEdit):
     def __init__(self, root):
         self.root = root
@@ -150,14 +149,19 @@ class Gui_Main(TreeEdit):
         # Dropdown for status
         self.status_type = ttk.Combobox(self.entry_frame, values=["NPC", "PC"])
         self.status_type.current(0)
-        self.status_type.grid(row=6, column=1, sticky="ew")
+        self.status_type.grid(row=6, column=1, padx=5, pady=(0,5), sticky="ew")
         self.status_type.bind("<<ComboboxSelected>>", self.status_widgets)
 
         # Death Saves Checkbutton
         self.has_saves = tk.BooleanVar()
-        self.death_saves = ttk.Checkbutton(self.entry_frame, text="Death Saves", variable=self.has_saves)
-        self.death_saves.grid(row=7, column=0, sticky="ew")
+        self.death_saves = ttk.Checkbutton(self.entry_frame, text = "Death Saves", variable = self.has_saves)
+        #Since NPC is the default we start with death_saves
+        self.death_saves.grid(row=7, column=0, padx=(0,33), pady=(0,5), sticky="ew")
 
+        # Rolls for Initiative checkbutton
+        self.rolls_init = tk.BooleanVar()
+        self.init_rolls = ttk.Checkbutton(self.entry_frame, text = "Roll's For Initiative", variable = self.rolls_init)
+        
         # Insert Button
         self.insert_button = ttk.Button(self.entry_frame, text="Insert", command=self.insert_button)
         self.insert_button.grid(row=9, columnspan=2, column=0, sticky="ew")
@@ -183,7 +187,6 @@ class Gui_Main(TreeEdit):
         self.table_view.heading("healing", text="Healing")
         self.table_view.heading("death_saves", text="Death Saves") 
 
-
         self.table_view.column("turn", width=50)
         self.table_view.column("name", width=150)
         self.table_view.column("initiative", width=100)
@@ -203,26 +206,28 @@ class Gui_Main(TreeEdit):
         entry = ttk.Entry(frame)
         entry.insert(0, initial_text)
         entry.bind("<FocusIn>", lambda e, entry=entry: entry.delete(0, 'end'))
-        entry.grid(row=row, column=1, sticky="ew")
+        entry.grid(row=row, column=1, padx=5, pady=(0,5), sticky="ew")
         return entry
 
     def add_thp_entry(self):
         if self.has_thp.get():
-            self.thp_label.grid(row=5, column=0, sticky="ew")
-            self.thp_entry.grid(row=5, column=1, sticky="ew")
+            self.thp_label.grid(row=5, column=0, pady=(0,5), sticky="ew")
+            self.thp_entry.grid(row=5, column=1, padx=5, pady=(0,5), sticky="ew")
             self.thp_space.grid_remove()
         else:
-            self.thp_space.grid(row=5, column=0, sticky="ew")
+            self.thp_space.grid(row=5, pady=5, column=0, sticky="ew")
             self.thp_entry.grid_remove()
             self.thp_label.grid_remove()
 
     def status_widgets(self, event=None):
         status = self.status_type.get()
         if status == "NPC":
-            self.death_saves.grid()
-        elif status == "PC":
-            self.death_saves.grid_remove()
+            self.death_saves.grid(row=7, column=0, pady=(0,5), sticky="ew")
+            self.init_rolls.grid_remove()
 
+        elif status == "PC":
+            self.init_rolls.grid(row=7, column=0, pady=(0,5), sticky="ew")
+            self.death_saves.grid_remove()
 
     def insert_button(self):
         
