@@ -4,9 +4,9 @@
 TO-DO: 
 1) Get styles working
 2) Add some input limitations
-3) CSV support
+3) CSV support - Is this really wanted/necessary
 4) Fix horizontal offset again
-5) AAAAAHHHH FUCK
+5) AAAAAHHHH FUCK - I agree
 """
 
 

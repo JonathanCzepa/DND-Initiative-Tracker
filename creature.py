@@ -165,56 +165,5 @@ def sortInit(creatures, init, reverse=False):
     return sorted(creatures, key=lambda x: getattr(x, init), reverse=reverse)
 
 
-#Test Cases for now
 
-Katla = playerCharacter("Katla", 16, 30, 2)
-
-#Check Initialization 
-print(f"Katla's AC: {Katla.getAC}")
-print(f"Katla's HP is: {Katla.getHPcurrent()}\n")
-print(f"Katla's THP is {Katla.getHPtemp()}")
-print(f"Katla's will to live: {Katla.getIsDead}")
-
-
-#Deal damage
-Katla.setHPcurrent(5)
-print(f"Katla's HP is: {Katla.getHPcurrent()}\n")
-
-#Set TempHP
-Katla.setHPTemp(10)
-print(f"Katla's THP is: {Katla.getHPtemp()}\n")
-
-#Heal
-Katla.setHPcurrent(9)
-Katla.setHPcurrent(-1)
-
-print(f"Katla's THP is: {Katla.getHPtemp()}")
-print(f"Katla's HP is: {Katla.getHPcurrent()}")
-
-#initiative
-print(f"Katla's initiative is {Katla.getInit()} ")
-Katla.rollInit()
-print(f"Katla's initiative is {Katla.getInit()} ")
-
-Smoking_Joe = playerCharacter("Smoking Joe", 15, 25, 3)
-print(f"Smoking jonk's initiative is {Smoking_Joe.getInit()} ")
-Smoking_Joe.rollInit()
-print(f"Smoking jonk's initiative is {Smoking_Joe.getInit()} ")
-
-Troglodyte = NPC("Trog1", 14, 42, 4)
-print(f"Troglodytes's initiative is {Troglodyte.getInit()} ")
-Troglodyte.rollInit()
-print(f"Troglodytes's initiative is {Troglodyte.getInit()} ")
-
-
-init_list = [Katla, Smoking_Joe, Troglodyte]
-
-sorted_init = sortInit(init_list, "init")
-
-
-
-print(Smoking_Joe)
-print(Katla)
-print(Troglodyte)
-print(sorted_init)
 
