@@ -1,11 +1,6 @@
 from abc import ABC, abstractmethod
 import random
 
-"""
-help, WHAT THE FUCK IS HAPPENING
-
-Bruh
-"""
 
 #Abstract class for NPCs and PCs.
 class creature(ABC):
@@ -83,28 +78,26 @@ class creature(ABC):
     """ Setter to deal with damage and healer scenarios  """   
     def setHPcurrent(self, damage) -> int:    
 
-        #Deal damage to temp HP first
+        #Check if wanting to deal damage
         if (damage > 0):
+            #Check if TempHP is existent
             if (self.__HPtemp > 0):
-                #Set follow through damage
-                throughDamage = damage - self.__HPtemp
             
-             #Deal damage to tempHP
+                #Deal damage to tempHP
                 self.__HPtemp -= damage
-            
                 #Check if tempHP is less than 0
                 if (self.__HPtemp < 0):
                     self.__HPtemp = 0
-            
-                #Deal follow through damage
-                if(throughDamage > 0):
+                    #Set follow through damage
+                    throughDamage = damage - self.__HPtemp
+                    #Deal follow through damage
                     self.__HPcurrent -= throughDamage
         
             #Deal damage with no temp HP
             if (self.__HPtemp == 0):
                 self.__HPcurrent -= damage
       
-        #Healing
+        #Healing == -damage
         if (damage < 0):
             self.__HPcurrent -= damage
 
